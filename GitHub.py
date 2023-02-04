@@ -12,7 +12,7 @@ def get_most_contributed_files(username:str, token:str):
     # Set the authentication headers
     headers = {"Authorization": f"Token {token}"}
     # Use the GitHub API to get the user's contributions
-    url = f"https://api.github.com/search/commits?q=author:{username}+committer-date:>={last_year}+repo:daos-stack/daos"
+    url = f"https://api.github.com/search/commits?q=author:{username}+committer-date:>={last_year}"
     response = requests.get(url, headers=headers)
     print(response.text)
     commits = json.loads(response.text)['items']
