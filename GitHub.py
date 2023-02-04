@@ -14,7 +14,7 @@ def get_most_contributed_files(username:str, token:str):
     # Set the authentication headers
     headers = {"Authorization": f"Token {token}"}
     # Use the GitHub API to get the user's contributions
-    url = f"https://api.github.com/search/commits?q=author:{username}+committer-date:>={last_year}"
+    url = f"https://api.github.com/search/commits?q=author:{username}+committer-date:>={last_year}+repo:daos-stack/daos"
     try:
         response = requests.get(url, headers=headers)
         commits = json.loads(response.text)['items']
@@ -37,4 +37,4 @@ def get_most_contributed_files(username:str, token:str):
     except Exception:
         print(response.text)
 
-get_most_contributed_files("cotton-daddy", token)
+get_most_contributed_files("brianjmurrell", token)
