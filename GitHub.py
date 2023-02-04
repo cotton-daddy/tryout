@@ -5,7 +5,7 @@ import datetime
 # Get some stats from a rich public repository to help with a Personal Software Process presentation
 
 # GitHub authentication token
-token="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";
+token=input('Enter your GitHub token:')
 
 def get_most_contributed_files(username:str, token:str):
     # Get the date one year ago
