@@ -1,6 +1,7 @@
 import requests
 import json
 import datetime
+import re
 
 # Get some stats from a rich public repository to help with a Personal Software Process presentation
 
@@ -37,4 +38,42 @@ def get_most_contributed_files(username:str, token:str):
     except Exception:
         print(response.text)
 
-get_most_contributed_files("brianjmurrell", token)
+
+def get_most_worked_on_JIRAs(username:str, token:str, jira_project:str):
+    # Get the date one year ago
+    now = datetime.datetime.now()
+    last_year = (now - datetime.timedelta(days=365)).strftime("%Y-%m-%d")
+    # Set the authentication headers
+    headers = {"Authorization": f"Token {token}"}
+    # Use the GitHub API to get the user's contributions
+    url = f"https://api.github.com/search/commits?q=author:{username}+committer-date:>={last_year}+repo:daos-stack/daos"
+    try:
+        response = requests.get(url, headers=headers)
+        commits = json.loads(response.text)['items']
+        # Get a list of JIRAs contributed to
+        JIRAs = {}
+        for commit in commits:
+            try:
+                message = commit.get('commit').get('message')
+                JIRA_ID = re.search(f"{jira_project}\-\d+", message).group()
+            except Exception as e:
+                print(str(e))
+                print(f"{message}\n\n")
+                continue
+            if JIRA_ID not in JIRAs:
+                JIRAs[JIRA_ID] = 1
+            else:
+                JIRAs[JIRA_ID] += 1
+        # Sort the JIRAs by number of contributions
+        sorted_JIRAs = sorted(JIRAs.items(), key=lambda x: x[1], reverse=True)
+        # Print the result
+        print(f"The user {username} has contributed to the following JIRAs in the last year:")
+        for i, JIRA in enumerate(sorted_JIRAs[:10]):
+            print(f"{i+1}. {JIRA[0]} ({JIRA[1]} contributions)")
+    except Exception as e:
+        print(str(e))
+        print(response.text)
+        pass
+
+# get_most_contributed_files("brianjmurrell", token)
+get_most_worked_on_JIRAs("brianjmurrell", token, "DAOS")
